@@ -1,17 +1,15 @@
 #!/usr/bin/python3
 # Copyright (c) 2014 Adafruit Industries
 # Author: Tony DiCola
-
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-
+# test
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,13 +17,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import sys
+import socket
+import threading
+import RPi.GPIO as GPIO
 import http.client as http
 import urllib
 import json
 import time
 import Adafruit_DHT
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 deviceId = 'DD8kuyJ1'
 deviceKey = 'AH0nqcyyfXCXWiou' 
 
@@ -79,11 +83,32 @@ else:
     sys.exit(1)
 while(1):
 	h0,t0 = Adafruit_DHT.read_retry(sensor,pin)
+	SwitchStatus = GPIO.input(24)
 	if h0 is not None and t0 is not None:
 		print('Temp={0:0.1f}* Humidity={1:0.1f}%'.format(t0,h0))
-		payload = {"datapoints":[{"dataChnId":"Humidity","values":{"value":h0}},{"dataChnId":"Temperature","values":{"value":t0}}]} 
+		payload = {"datapoints":[{"dataChnId":"Humidity","values":{"value":h0}},{"dataChnId":"Temperature","values":{"value":t0}},{"dataChnId":"SwitchStatus","values":{"value":SwitchStatus}}]} 
 		post_to_mcs(payload)
 		time.sleep(10)
+		if( SwitchStatus == 0):
+			print('Button pressed')
+		else:
+			print('Button released')
 	else:
 		print('Failed to get reading. Try again!')
 		sys.exit(1)
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
